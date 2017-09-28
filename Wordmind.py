@@ -5,9 +5,9 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack(anchor="nw")
-        self.create_widgets()
+        self.create_widgets(chars=5)
 
-    def create_widgets(self):
+    def create_widgets(self, chars=8, rows=5, boxsize=75, boxspacing=0.5):
         # self.hi_there = tk.Button(self)
         # self.hi_there["text"] = "Hello World\n(click me)"
         # self.hi_there["command"] = self.say_hi
@@ -21,20 +21,21 @@ class Application(tk.Frame):
         self.enter["command"] = self.make_guess
         self.enter.pack(side="bottom")
 
-        self.canvas = tk.Canvas(self, width=8*80-5, height=100)
+        self.canvas = tk.Canvas(self, width=chars*(boxsize+boxspacing)-boxspacing, height=rows*(boxsize+boxspacing)-boxspacing)
         self.canvas.pack(side="top")
 
-        self.text = tk.Label(self)
-        self.text.pack()
+        # self.text = tk.Label(self)
+        # self.text.pack()
 
         # self.canvas.create_line(0, 0, 200, 100)
         # self.canvas.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
 
         self.guess = []
         self.text = []
-        for i in range(8):
-            self.canvas.create_rectangle(0+80*i, 0, 75+80*i, 75, fill="#1919FF", outline="#1919FF")
-            self.text.append(self.canvas.create_text((80*i+75/2, 75/2), text="", font=("", 55), fill="#FFFFFF"))
+        for i in range(chars):
+            for u in range(rows):
+                self.canvas.create_rectangle(0+(boxsize+boxspacing)*i, 0+(boxsize+boxspacing)*u, boxsize+(boxsize+boxspacing)*i, boxsize+(boxsize+boxspacing)*u, fill="#1768F5", outline="#0A3175")
+            self.text.append(self.canvas.create_text(((boxsize+boxspacing)*i+boxsize/2, boxsize/2), text="", font=("", boxsize-20), fill="#FFFFFF"))
 
         # self.quit = tk.Button(self, text="QUIT", fg="red",
         #                      command=root.destroy)
