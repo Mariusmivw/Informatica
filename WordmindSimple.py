@@ -22,8 +22,8 @@ while again == "Y":                                             # "brommer","fie
                 current[i] = guess[i]                           # if a letter is in the right place make it visible in the next round
                 if (guess == secretword):
                     correct = True                              # the guess was right
-        for i in range(wordlen):
-            if (guess[i] != secretword[i] and guess[i] in secretword and current[i]=="-" and (current[secretword.index(guess[i])] == "-" or current[secretword.index(guess[i])]=="?")):
+                    break
+            elif (guess[i] in secretword and current[i]=="-" and (current[secretword.index(guess[i])] == "-" or current[secretword.index(guess[i])]=="?")):
                 current[i] = "?"                                # the letter is in the word, but not in the right place, therefor placing a question mark at its position
         print("\n")                                             # for nicer looks
 

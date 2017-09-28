@@ -1,6 +1,15 @@
 import tkinter as tk
 
 
+
+
+
+
+# note: make sure a 2nd guess is possible
+
+
+
+
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -15,6 +24,10 @@ class Application(tk.Frame):
 
         # self.guess = tk.Entry(self)
         # self.guess.pack(side="top")
+        self.chars      = chars
+        self.rows       = rows
+        self.boxsize    = boxsize
+        self.boxspacing = boxspacing
 
         self.enter = tk.Button(self)
         self.enter["text"] = "Make my guess!"
@@ -29,12 +42,14 @@ class Application(tk.Frame):
 
         # self.canvas.create_line(0, 0, 200, 100)
         # self.canvas.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
+        self.initialize_line(chars=chars, rows=rows, boxsize=boxsize, boxspacing=boxspacing)
 
-        self.word    = "hallo"
-        self.guess   = []
+    def initialize_line(self, chars=8, rows=5, boxsize=75, boxspacing=1, line=0):
         self.text    = []
+        self.guess   = []
         self.circle  = []
         self.correct = []
+        self.secretword = "hallo".upper()
         for i in range(chars):
             for u in range(rows):
                 self.canvas.create_rectangle((boxsize+boxspacing)*i, (boxsize+boxspacing)*u, boxsize+(boxsize+boxspacing)*i, boxsize+(boxsize+boxspacing)*u, fill="#1768F5", outline="#0A3175")
@@ -49,19 +64,28 @@ class Application(tk.Frame):
 
     def make_guess(self):
         print("You guessed:", "".join(self.guess))
+        secretword = list(self.secretword)
         for i in range(len(self.guess)):
-            if(self.guess[i] == self.word[i].upper()):
+            if (self.guess[i] == self.secretword[i]):
                 self.canvas.itemconfig(self.correct[i], state="normal")
+                secretword[secretword.index(self.guess[i])] = "~"
+                if (self.guess == list(self.secretword)):
+                    correct = True
+        for i in range(len(self.guess)):
+            if (self.guess[i] in secretword):
+                self.canvas.itemconfig(self.circle[i], state="normal")
+                secretword[secretword.index(self.guess[i])] = "~"
+        self.initialize_line()
 
     def key(self, event):
         # print(event.keysym)
-        if len(event.keysym) == 1:
+        if (len(event.keysym) == 1):
             self.guess.append(event.keysym.upper())
             self.canvas.itemconfig(self.text[len(self.guess)-1], text=self.guess[len(self.guess)-1])
-        elif event.keysym == "BackSpace":
+        elif (event.keysym == "BackSpace"):
             self.guess = self.guess[:-1]
             self.canvas.itemconfig(self.text[len(self.guess)], text="")
-        elif event.keysym == "Return":
+        elif (event.keysym == "Return"):
             self.make_guess()
 
 root = tk.Tk()
