@@ -12,9 +12,7 @@ hp = MyHTMLParser()
 with open("6Letters.html") as file:
     hp.feed(file.read())
 
-
 secretword = words[random.randint(0,len(words)-1)].upper()
-# secretword = "hallo".upper()
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -83,6 +81,7 @@ class Application(tk.Frame):
             if (self.guess[i] in secretwordTemp):
                 self.canvas.itemconfig(self.circle[i], state="normal")
                 secretwordTemp[secretwordTemp.index(self.guess[i])] = "~"
+
         self.initialize_line(chars=self.chars, rows=self.rows, boxsize=self.boxsize, boxspacing=self.boxspacing, line=self.lines)
 
     def key(self, event):
@@ -94,7 +93,7 @@ class Application(tk.Frame):
             self.guess = self.guess[:-1]
             self.canvas.itemconfig(self.text[len(self.guess)], text="")
         elif (event.keysym == "Return"):
-            if (self.guess != []):
+            if (len(self.guess) == len(secretword)):
                 self.make_guess()
 
 root = tk.Tk()
