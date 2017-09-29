@@ -1,22 +1,31 @@
+import random
 import tkinter as tk
+from html.parser import HTMLParser
 
+words = []
+class MyHTMLParser(HTMLParser):
+    def handle_data(self, data):
+        if ("".join(data.split()) != "" and "".join(data.split()).startswith("Letter") == False):
+            words.append(data)
 
-
-
+hp = MyHTMLParser()
+with open("6Letters.html") as file:
+    hp.feed(file.read())
 
 
 # note: make sure a 2nd guess is possible
 
 
-
+secretword = words[random.randint(0,len(words)-1)].upper()
+# secretword = "hallo".upper()
 
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack(anchor="nw")
-        self.create_widgets(chars=6, rows=10)
+        self.create_widgets(chars=len(secretword), rows=10)
 
-    def create_widgets(self, chars=8, rows=5, boxsize=75, boxspacing=1):
+    def create_widgets(self, chars=6, rows=5, boxsize=75, boxspacing=1):
         # self.hi_there = tk.Button(self)
         # self.hi_there["text"] = "Hello World\n(click me)"
         # self.hi_there["command"] = self.say_hi
@@ -44,12 +53,11 @@ class Application(tk.Frame):
         # self.canvas.create_line(0, 100, 200, 0, fill="red", dash=(4, 4))
         self.initialize_line(chars=chars, rows=rows, boxsize=boxsize, boxspacing=boxspacing)
 
-    def initialize_line(self, chars=8, rows=5, boxsize=75, boxspacing=1, line=0):
+    def initialize_line(self, chars=6, rows=5, boxsize=75, boxspacing=1, line=0):
         self.text    = []
         self.guess   = []
         self.circle  = []
         self.correct = []
-        self.secretword = "hallo".upper()
         self.lines = line + 1
         for i in range(chars):
             if (line==0):
@@ -66,17 +74,17 @@ class Application(tk.Frame):
 
     def make_guess(self):
         print("You guessed:", "".join(self.guess))
-        secretword = list(self.secretword)
+        secretwordTemp = list(secretword)
         for i in range(len(self.guess)):
-            if (self.guess[i] == self.secretword[i]):
+            if (self.guess[i] == secretword[i]):
                 self.canvas.itemconfig(self.correct[i], state="normal")
-                secretword[secretword.index(self.guess[i])] = "~"
-                if (self.guess == list(self.secretword)):
+                secretwordTemp[secretwordTemp.index(self.guess[i])] = "~"
+                if (self.guess == list(secretword)):
                     correct = True
         for i in range(len(self.guess)):
-            if (self.guess[i] in secretword):
+            if (self.guess[i] in secretwordTemp):
                 self.canvas.itemconfig(self.circle[i], state="normal")
-                secretword[secretword.index(self.guess[i])] = "~"
+                secretwordTemp[secretwordTemp.index(self.guess[i])] = "~"
         self.initialize_line(chars=self.chars, rows=self.rows, boxsize=self.boxsize, boxspacing=self.boxspacing, line=self.lines)
 
     def key(self, event):
