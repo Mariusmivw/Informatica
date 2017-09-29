@@ -18,7 +18,8 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack(anchor="nw")
-        self.create_widgets(chars=len(secretword), rows=10)
+        self.create_widgets(chars=len(secretword))
+        self.stay = []
 
     def create_widgets(self, chars=6, rows=5, boxsize=75, boxspacing=1):
         # self.hi_there = tk.Button(self)
@@ -73,7 +74,8 @@ class Application(tk.Frame):
         for i in range(len(self.guess)):
             if (self.guess[i] == secretword[i]):
                 self.canvas.itemconfig(self.correct[i], state="normal")
-                secretwordTemp[secretwordTemp.index(self.guess[i])] = "~"
+                secretwordTemp[i] = "~"
+                self.stay.append(i)
                 if (self.guess == list(secretword)):
                     correct = True
 
@@ -83,15 +85,23 @@ class Application(tk.Frame):
                 secretwordTemp[secretwordTemp.index(self.guess[i])] = "~"
 
         self.initialize_line(chars=self.chars, rows=self.rows, boxsize=self.boxsize, boxspacing=self.boxspacing, line=self.lines)
+        for i in range(len(self.stay)):
+            self.canvas.itemconfig(self.text[self.stay[i]], text=secretword[self.stay[i]], fill="#AFAFAF")
+            self.canvas.itemconfig(self.correct[self.stay[i]], state="normal")
 
-    def key(self, event):
+    def key(self, event): # this runs whenever a key is pressed
         # print(event.keysym)
         if (len(event.keysym) == 1):
             self.guess.append(event.keysym.upper())
-            self.canvas.itemconfig(self.text[len(self.guess)-1], text=self.guess[len(self.guess)-1])
+            self.canvas.itemconfig(self.text[len(self.guess)-1], text=self.guess[len(self.guess)-1], fill="#FFFFFF")
+            if (len(self.guess)-1 in self.stay and self.guess[len(self.guess)-1] != secretword[len(self.guess)-1]):
+                self.canvas.itemconfig(self.correct[len(self.guess)-1], state="hidden")
         elif (event.keysym == "BackSpace"):
             self.guess = self.guess[:-1]
             self.canvas.itemconfig(self.text[len(self.guess)], text="")
+            if (len(self.guess) in self.stay):
+                self.canvas.itemconfig(self.text[len(self.guess)], text=secretword[len(self.guess)], fill="#AFAFAF")
+                self.canvas.itemconfig(self.correct[len(self.guess)], state="normal")
         elif (event.keysym == "Return"):
             if (len(self.guess) == len(secretword)):
                 self.make_guess()
