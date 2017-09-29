@@ -14,7 +14,7 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack(anchor="nw")
-        self.create_widgets(chars=5)
+        self.create_widgets(chars=6, rows=10)
 
     def create_widgets(self, chars=8, rows=5, boxsize=75, boxspacing=1):
         # self.hi_there = tk.Button(self)
@@ -50,12 +50,14 @@ class Application(tk.Frame):
         self.circle  = []
         self.correct = []
         self.secretword = "hallo".upper()
+        self.lines = line + 1
         for i in range(chars):
-            for u in range(rows):
-                self.canvas.create_rectangle((boxsize+boxspacing)*i, (boxsize+boxspacing)*u, boxsize+(boxsize+boxspacing)*i, boxsize+(boxsize+boxspacing)*u, fill="#1768F5", outline="#0A3175")
-            self.circle.append(self.canvas.create_oval((boxsize+boxspacing)*i, 0, boxsize+(boxsize+boxspacing)*i, boxsize, fill="#DCCE52", outline="#DCCE52", state="hidden"))
-            self.correct.append(self.canvas.create_rectangle((boxsize+boxspacing)*i, 0, boxsize+(boxsize+boxspacing)*i, boxsize, fill="#FF0000", outline="#7C0000", state="hidden"))
-            self.text.append(self.canvas.create_text(((boxsize+boxspacing)*i+boxsize/2, boxsize/2), text="", font=("", boxsize-20), fill="#FFFFFF"))
+            if (line==0):
+                for u in range(rows):
+                    self.canvas.create_rectangle((boxsize+boxspacing)*i, (boxsize+boxspacing)*u, boxsize+(boxsize+boxspacing)*i, boxsize+(boxsize+boxspacing)*u, fill="#1768F5", outline="#0A3175")
+            self.circle.append(self.canvas.create_oval((boxsize+boxspacing)*i, line*(boxsize+boxspacing), boxsize+(boxsize+boxspacing)*i, boxsize+line*(boxsize+boxspacing), fill="#EEEE11", outline="#DCCE52", state="hidden"))
+            self.correct.append(self.canvas.create_rectangle((boxsize+boxspacing)*i, line*(boxsize+boxspacing), boxsize+(boxsize+boxspacing)*i, boxsize+line*(boxsize+boxspacing), fill="#FF0000", outline="#7C0000", state="hidden"))
+            self.text.append(self.canvas.create_text(((boxsize+boxspacing)*i+boxsize/2, boxsize/2+line*(boxsize+boxspacing)), text="", font=("", boxsize-20), fill="#FFFFFF"))
 
         # self.quit = tk.Button(self, text="QUIT", fg="red",
         #                      command=root.destroy)
@@ -75,7 +77,7 @@ class Application(tk.Frame):
             if (self.guess[i] in secretword):
                 self.canvas.itemconfig(self.circle[i], state="normal")
                 secretword[secretword.index(self.guess[i])] = "~"
-        self.initialize_line()
+        self.initialize_line(chars=self.chars, rows=self.rows, boxsize=self.boxsize, boxspacing=self.boxspacing, line=self.lines)
 
     def key(self, event):
         # print(event.keysym)
