@@ -13,9 +13,6 @@ with open("6Letters.html") as file:
     hp.feed(file.read())
 
 
-# note: make sure a 2nd guess is possible
-
-
 secretword = words[random.randint(0,len(words)-1)].upper()
 # secretword = "hallo".upper()
 
@@ -71,16 +68,17 @@ class Application(tk.Frame):
         #                      command=root.destroy)
         # self.quit.pack(side="bottom")
 
-
     def make_guess(self):
         print("You guessed:", "".join(self.guess))
         secretwordTemp = list(secretword)
+
         for i in range(len(self.guess)):
             if (self.guess[i] == secretword[i]):
                 self.canvas.itemconfig(self.correct[i], state="normal")
                 secretwordTemp[secretwordTemp.index(self.guess[i])] = "~"
                 if (self.guess == list(secretword)):
                     correct = True
+
         for i in range(len(self.guess)):
             if (self.guess[i] in secretwordTemp):
                 self.canvas.itemconfig(self.circle[i], state="normal")
@@ -96,7 +94,8 @@ class Application(tk.Frame):
             self.guess = self.guess[:-1]
             self.canvas.itemconfig(self.text[len(self.guess)], text="")
         elif (event.keysym == "Return"):
-            self.make_guess()
+            if (self.guess != []):
+                self.make_guess()
 
 root = tk.Tk()
 app = Application(master=root)
