@@ -4,13 +4,13 @@ import random
 import tkinter as tk
 from html.parser import HTMLParser
 
-words = []
 class MyHTMLParser(HTMLParser):
     def handle_data(self, data): # Redifining the handle_data function
         if ("".join(data.split()) != "" and "".join(data.split()).startswith("Letter") == False):
             words.append(data) # add the words to the word list
 
 hp = MyHTMLParser()
+words = []
 
 with open("6Letters.html") as file: # getting the contents of '6Letters.html'
     hp.feed(file.read())            # feeding it to the HTML-parser so it can do its thing
@@ -46,7 +46,7 @@ class Application(tk.Frame):
         self.boxspacing = boxspacing
 
         self.canvas = tk.Canvas(self, width=chars*(boxsize+boxspacing)-boxspacing, height=rows*(boxsize+boxspacing)-boxspacing)
-        self.canvas.pack(side="top") # ^^making a canvas with at the right size^^
+        self.canvas.pack(side="top") # ^^^^making a canvas with at the right size^^
 
         self.enter = tk.Button(self) # making a guess button, if you don't like pressing Enter
         self.enter["text"] = "Make my guess!"
@@ -81,7 +81,7 @@ class Application(tk.Frame):
             self.circle.append(self.canvas.create_oval((boxsize+boxspacing)*i, line*(boxsize+boxspacing), boxsize+(boxsize+boxspacing)*i, boxsize+line*(boxsize+boxspacing), fill="#EEEE11", outline="#DCCE52", state="hidden"))
             self.correct.append(self.canvas.create_rectangle((boxsize+boxspacing)*i, line*(boxsize+boxspacing), boxsize+(boxsize+boxspacing)*i, boxsize+line*(boxsize+boxspacing), fill="#FF0000", outline="#7C0000", state="hidden"))
             self.text.append(self.canvas.create_text(((boxsize+boxspacing)*i+boxsize/2, boxsize/2+line*(boxsize+boxspacing)), text="", font=("", boxsize-20), fill="#FFFFFF"))
-            # [81-84] >> creating the proper backgrounds for the text, and the text itself
+            # [80-83] >> creating the proper backgrounds for the text, and the text itself
 
         # self.quit = tk.Button(self, text="QUIT", fg="red",
         #                      command=root.destroy)
@@ -95,7 +95,7 @@ class Application(tk.Frame):
         self.canvas.itemconfig(self.text[0], text=secretword[0], fill="#AFAFAF") # setting the first letter
         self.canvas.itemconfig(self.correct[0], state="normal") # making the background red
 
-    def make_guess(self): # go to the next function first to know what this is about (line 128)
+    def make_guess(self): # go to the next function first to know what this is about (line 133)
         print("You guessed: " + "".join(self.guess)) # info on what the guessed word was in the console
         secretwordTemp = list(secretword) # just the same, but this one can be alterd without consequences
         guess = self.guess # so works this one
@@ -124,7 +124,11 @@ class Application(tk.Frame):
                 self.canvas.itemconfig(self.text[-i-2], text=list(str(math.floor((time.time() - self.startTime)*10)/10))[-i-1])
             for i in range(5-len(str(math.floor((time.time() - self.startTime)*10)/10))):
                 self.canvas.itemconfig(self.text[i], text="")
-            # [123-127] >> making the time appear correctly in the GUI
+            # [122-126] >> making the time appear correctly in the GUI
+
+            self.popup = Popup(tk.Tk())
+            self.popup.bind_all("<KeyPress>", self.popup.key)
+            self.popup.mainloop()
 
     def key(self, event): # this runs whenever a key is pressed
         # print(event.keysym)
@@ -144,7 +148,27 @@ class Application(tk.Frame):
 
         elif (event.keysym == "Return"):
             if (len(self.guess) == len(secretword)): # the typed in word is the correct length
-                self.make_guess() # now you can go back to that function (line 99)
+                self.make_guess() # now you can go back to that function (line 98)
+
+class Popup(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.pack(anchor="nw")
+        self.label = tk.Label(self)
+        self.label["text"] = "Do you want to play again? (Y/N)"
+        self.label.pack() # made a piece of text appear with the text above
+        self.input = tk.Entry(self)
+        self.input.pack() # created an input
+        self.input.focus_force() # focussing on that input
+
+    def key(self, event):
+        if (event.keysym == "Return"):          # if Enter is pressed
+            val = self.input.get().upper()      # get the users input
+            self._root().destroy()              # exit this popup window
+            if (val == "Y" or val == "YES"):    # vcalidate the input
+                app.restart()                   # guess a new word
+            else:                               # the user didn't want to play again
+                root._root().destroy()          # exit the program
 
 root = tk.Tk()
 app = Application(master=root)

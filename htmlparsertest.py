@@ -1,4 +1,5 @@
 import html.parser
+
 words = []
 class HTMLParser(html.parser.HTMLParser):
     #def handle_starttag(self, tag, attrs):
