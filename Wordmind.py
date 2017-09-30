@@ -11,11 +11,13 @@ class MyHTMLParser(HTMLParser):
 
 hp = MyHTMLParser()
 words = []
+wordfiles = ["5Letters.html", "6Letters.html"]
 
-with open("6Letters.html") as file: # getting the contents of '6Letters.html'
-    hp.feed(file.read())            # feeding it to the HTML-parser so it can do its thing
+for i in range(len(wordfiles)):
+    with open(wordfiles[i]) as file:        # getting the contents of '6Letters.html'
+        hp.feed(file.read())                # feeding it to the HTML-parser so it can do its thing
 
-with open("additionalWords.txt") as file: #adding words from the additionalWords list
+with open("additionalWords.txt") as file:   #adding words from the additionalWords list
     addedWords = file.read().upper().split()
     for i in range(len(addedWords)):
         words.append(addedWords[i-1])
