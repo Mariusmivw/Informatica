@@ -1,7 +1,6 @@
 import math
 import time
 import random
-import http
 import tkinter as tk
 from html.parser import HTMLParser
 
