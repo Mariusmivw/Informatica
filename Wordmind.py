@@ -11,7 +11,7 @@ class MyHTMLParser(HTMLParser):
 
 hp = MyHTMLParser()
 words = []
-wordfiles = ["5Letters.html", "6Letters.html"]
+wordfiles = ["5Letters.html", "6Letters.html", "7Letters.html", "8Letters.html", "9Letters.html"]
 
 for i in range(len(wordfiles)):
     with open(wordfiles[i]) as file:        # getting the contents of '6Letters.html'
