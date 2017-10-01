@@ -23,14 +23,14 @@ with open("additionalWords.txt") as file:   #adding words from the additionalWor
         words.append(addedWords[i-1])
 
 secretword = words[random.randint(0,len(words)-1)].upper()
-# secretword = "zelden".upper()
+#secretword = "zeldezn".upper()
 
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack(anchor="nw")
         self.create_widgets(chars=len(secretword))
-        self.stay = []
+        self.stay = [0]
         self.canvas.itemconfig(self.text[0], text=secretword[0], fill="#AFAFAF")
         self.canvas.itemconfig(self.correct[0], state="normal")
 
@@ -47,7 +47,7 @@ class Application(tk.Frame):
         self.boxsize    = boxsize
         self.boxspacing = boxspacing
 
-        self.canvas = tk.Canvas(self, width=chars*(boxsize+boxspacing)-boxspacing, height=rows*(boxsize+boxspacing)-boxspacing)
+        self.canvas = tk.Canvas(self, width=9*(boxsize+boxspacing)-boxspacing, height=rows*(boxsize+boxspacing)-boxspacing)
         self.canvas.pack(side="top") # ^^^^making a canvas with at the right size^^
 
         self.enter = tk.Button(self) # making a guess button, if you don't like pressing Enter
@@ -59,6 +59,16 @@ class Application(tk.Frame):
         self.again["text"] = "Restart"
         self.again["command"] = self.restart
         self.again.pack(side="left")
+
+        info = [[], [], [], []]
+        u = 0
+        root.update_idletasks()
+        for i in range(len(root.geometry())):
+            if (root.geometry()[i] == "x" or root.geometry()[i] == "+"):
+                u += 1
+            else:
+                info[u].append(root.geometry()[i])
+        root.geometry(("%sx%s+%s+%s")%((chars*76+3), "".join(info[1]), "".join(info[2]), "".join(info[3])))
 
 
 
@@ -75,6 +85,7 @@ class Application(tk.Frame):
         self.circle  = []
         self.correct = []
         self.lines = line + 1
+        self.chars = chars
         for i in range(chars):
             if (line==0):
                 for u in range(rows):
@@ -90,14 +101,29 @@ class Application(tk.Frame):
         # self.quit.pack(side="bottom")
 
     def restart(self):
+        global secretword
         self.canvas.delete("all") # clearing the canvas
         secretword = words[random.randint(0,len(words)-1)].upper() # selecting a new secret word
-        self.initialize_line()
+        info = [[], [], [], []]
+        u = 0
+        for i in range(len(root.geometry())):
+            if (root.geometry()[i] == "x" or root.geometry()[i] == "+"):
+                u += 1
+            else:
+                info[u].append(root.geometry()[i])
+            #print(info[u])
+        #for i in range(len(info)):
+        #    print(info[i])
+        root.geometry(("%sx%s+%s+%s")%((len(secretword)*76+3), "".join(info[1]), "".join(info[2]), "".join(info[3])))
+        print(len(secretword))
+        self.initialize_line(chars=len(secretword))
         self.stay = [0] # there are no chars that should stay yet, except the first letter
+        self.guess = [] # nothing has been guessed yet
         self.canvas.itemconfig(self.text[0], text=secretword[0], fill="#AFAFAF") # setting the first letter
         self.canvas.itemconfig(self.correct[0], state="normal") # making the background red
 
-    def make_guess(self): # go to the next function first to know what this is about (line 135)
+
+    def make_guess(self): # go to the next function first to know what this is about (line 172)
         print("You guessed: " + "".join(self.guess)) # info on what the guessed word was in the console
         secretwordTemp = list(secretword) # just the same, but this one can be alterd without consequences
         guess = self.guess # so works this one
@@ -120,19 +146,47 @@ class Application(tk.Frame):
 
         if (guess == list(secretword)): # the word has been guessed
             print("You found it!!!")
-            print("It took you " + str(math.floor((time.time() - self.startTime)*10)/10) + "s") # info to the console about how long it took to guess
+            elapsedTime = time.time() - self.startTime
+            elapsedString = str(elapsedTime)
+            print("It took you " + elapsedString + "s") # info to the console about how long it took to guess
+
             self.canvas.itemconfig(self.text[-1], text="s")
-            for i in range(len(str(math.floor((time.time() - self.startTime)*10)/10))):
-                self.canvas.itemconfig(self.text[-i-2], text=list(str(math.floor((time.time() - self.startTime)*10)/10))[-i-1])
-            for i in range(5-len(str(math.floor((time.time() - self.startTime)*10)/10))):
-                self.canvas.itemconfig(self.text[i], text="")
-            # [124-128] >> making the time appear correctly in the GUI
+            iPartLen = 0
+            for i in range(len(elapsedString)):
+                if (elapsedString[i] == "."):
+                    break
+                iPartLen = i+1
+            if (len(guess) - iPartLen == 1):
+                for i in range(len(guess)-1):
+                    self.canvas.itemconfig(self.text[i], text=elapsedString[i-1])
+                    if (i == 0):
+                        self.canvas.itemconfig(self.text[i], text="")
+                    elif (i == len(guess)-1):
+                        self.canvas.itemconfig(self.text[i], text=round(int(elapsedString[i-1])+int(elapsedString[i+1])/10))
+
+            elif (len(elapsedString) - len(guess) > 0):
+                for i in range(len(guess)-1):
+                    self.canvas.itemconfig(self.text[i], text=elapsedString[i])
+                    if (i == len(guess)-1):
+                        self.canvas.itemconfig(self.text[i], text=round(int(elapsedString[i-1])+int(elapsedString[i+1])/10))
+
+            elif (len(elapsedString) - len(guess) < 0):
+                for i in range(len(guess)-1):
+                    if (i < len(guess) - len(elapsedString)):
+                        self.canvas.itemconfig(self.text[i], text="")
+                    else:
+                        self.canvas.itemconfig(self.text[i], text=elapsedString[i+len(elapsedString)-len(guess)])
+
+            else:
+                self.canvas.itemconfig(self.text[i], text=elapsedString[i])
+            # [137-166] >> making the time appear correctly in the GUI
 
             self.popup = Popup(tk.Tk())
             self.popup.bind_all("<KeyPress>", self.popup.key)
             self.popup.mainloop()
 
     def key(self, event): # this runs whenever a key is pressed
+        print(root.geometry())
         # print(event.keysym)
         if (len(event.keysym) == 1): # the key pressed was probably a letter (could be a number, but that's your own stupidity)
             self.guess.append(event.keysym.upper())
@@ -150,7 +204,7 @@ class Application(tk.Frame):
 
         elif (event.keysym == "Return"):
             if (len(self.guess) == len(secretword)): # the typed in word is the correct length
-                self.make_guess() # now you can go back to that function (line 100)
+                self.make_guess() # now you can go back to that function (line 110)
 
 class Popup(tk.Frame):
     def __init__(self, master=None):
@@ -173,6 +227,7 @@ class Popup(tk.Frame):
                 root._root().destroy()          # exit the program
 
 root = tk.Tk()
+root.title("Wordmind")
 app = Application(master=root)
 app.bind_all("<KeyPress>", app.key) # actually making the key function run every time a key is pressed
 app.mainloop()

@@ -1,0 +1,80 @@
+13.056384528                          >> len(elapsedString) = 12  = 12         &&  len(iPart) = 2
+[1] [3] [.] [1] ['s']                 >> len(guess) = 5-1 =  4
+[0] [1] [2] round([3]+[4]/10) 's'                      12-4 =  8  &&  12-4-2 = 6      && 4-2 = 2
+
+13.056                                >> len(elapsedString) = 6   =  6         &&  len(iPart) = 2
+[ ] [1] [3] [.] [0] [5] [6] ['s']     >> len(guess) = 8-1 =  7
+ -  [0] [1] [2] [3] [4] [5]  's'                        6-7 = -1  &&  6-7-2 = -3      && 7-2 = 5
+
+130.56                                >> len(elapsedString) = 6   =  6         &&  len(iPart) = 3
+[ ] [1] [3] [0] ['s']                 >> len(guess) = 5-1 =  4
+ -  [0] [1] round([2]+[4]/10) 's'                       6-4 =  2  &&  6-4-3 = -1      && 4-3 = 1
+
+
+
+iPartLen = 0
+for i in range(len(elapsedString)):
+    if (elapsedString[i] == "."):
+        break
+    iPartLen = i+1
+if (len(guess) - iPartLen == 1):
+    for i in range(len(guess)-1):
+        self.canvas.itemconfig(self.text[i], text=elapsedString[i-1])
+        if (i == 0):
+            self.canvas.itemconfig(self.text[i], text="")
+        elif (i == len(guess)-1):
+            self.canvas.itemconfig(self.text[i], text=round(int(elapsedString[i-1])+int(elapsedString[i+1])/10))
+
+elif (len(elapsedString) - len(guess) > 0):
+    for i in range(len(guess)-1):
+        self.canvas.itemconfig(self.text[i], text=elapsedString[i])
+        if (i == len(guess)-1):
+            self.canvas.itemconfig(self.text[i], text=round(int(elapsedString[i-1])+int(elapsedString[i+1])/10))
+
+elif (len(elapsedString) - len(guess) < 0):
+    for i in range(len(guess)-1):
+        if (i < len(guess) - len(elapsedString)):
+            self.canvas.itemconfig(self.text[i], text="")
+        else:
+            self.canvas.itemconfig(self.text[i], text=elapsedString[i+len(elapsedString)-len(guess)])
+
+else:
+    self.canvas.itemconfig(self.text[i], text=elapsedString[i])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5 = 383     canvas = 5*80-5 = 400-5 = 395   dif = 12    dif = 4*chars - 8           size = chars*(80-4)+3
+6 = 459     canvas = 6*80-5 = 480-5 = 475   dif = 16
+7 = 535     canvas = 7*80-5 = 560-5 = 555   dif = 20
+8 = 611     canvas = 8*80-5 = 640-5 = 635   dif = 24
+9 = 687     canvas = 9*80-5 = 720-5 = 715   dif = 28
+
+
+
+
+
+70
+5 = 459
+6 = 535
+7 =
+8 =
+9 =
